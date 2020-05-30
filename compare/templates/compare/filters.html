@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<br>
+<div class="container">
+<form method="POST" action = "{% url 'compare:display_table' %}">
+{% csrf_token %}
+  <div class="row">
+      <div class="col-md-3">
+        <label class="text-muted">Select Field from {{ name1 }}</label>
+        <select class="custom-select my-select" name="field1">
+            {% for field in dd1 %}
+                {% if select1 == field %}
+          <option selected>{{ field }} </option>
+                {% endif %}
+                {% if select1 != field %}
+          <option>{{ field }} </option>
+                {% endif %}
+            {% endfor %}
+        </select>
+      </div>
+        <div class="col-md-3">
+        <label class="text-muted">Select Field from {{ name2 }}</label>
+        <select class="custom-select my-select" name="field2">
+          {% for field in dd2 %}
+                {% if select2 == field %}
+          <option selected>{{ field }} </option>
+                {% endif %}
+                {% if select2 != field %}
+          <option>{{ field }} </option>
+                {% endif %}
+          {% endfor %}
+        </select>
+        </div>
+        <div class="col-md-3">
+        <label class="text-muted">Select a Pivot Column</label>
+        <select class="custom-select my-select" name="pivot">
+           <option>Pivot Not Required</option>
+            {% for field in dd1 %}
+                {% if selectp == field and pivot_file_name == 'File-1'%}
+          <option selected>[File-1] {{ field }} </option>
+                {% endif %}
+                {% if selectp != field or pivot_file_name != 'File-1' %}
+          <option>[File-1] {{ field }} </option>
+                {% endif %}
+            {% endfor %}
+        {% for field in dd2 %}
+            {% if selectp == field and pivot_file_name == 'File-2' %}
+          <option selected>[File-2] {{ field }} </option>
+                {% endif %}
+                {% if selectp != field or pivot_file_name != 'File-2' %}
+          <option>[File-2] {{ field }} </option>
+                {% endif %}
+        {% endfor %}
+
+        </select>
+        </div>
+  <div class="col-md-3">
+        <label class="text-muted">Select an operation</label>
+        <select class="custom-select my-select" name="view filter">
+            {% if selectf == 'View All' %}
+          <option selected>View All</option>
+            {% endif %}
+            {% if selectf != 'View All' %}
+          <option>View All</option>
+            {% endif %}
+
+        {% if selectf == 'View Unique' %}
+          <option selected>View Unique</option>
+            {% endif %}
+            {% if selectf != 'View Unique' %}
+          <option>View Unique</option>
+            {% endif %}
+
+        {% if selectf == 'View Same' %}
+          <option selected>View Same</option>
+            {% endif %}
+            {% if selectf != 'View Same' %}
+          <option>View Same</option>
+            {% endif %}
+        </select>
+        </div>
+
+  </div>
+    <div align = "center">
+          <br>
+<button type="submit" class="btn btn-primary btn-lg" style="align-self: baseline;"> Compare  </button>
+      </div>
+</form>
+
+<br>
+{% if display %}
+
+    <table class="table table-striped">
+      <thead>
+        <tr>
+            {% if pivot_column != 'Pivot Not Required' %}
+                <th scope="col">{{ pivot_column }}</th>
+            {% endif %}
+          <th scope="col">{{ filter1 }}</th>
+          <th scope="col">{{ filter2 }}</th>
+        </tr>
+      </thead>
+      <tbody>
+    {% if pivot_column != 'Pivot Not Required' %}
+      {% for abc in zipper %}
+          {% if abc.0 == abc.1 %}
+              {% if abc.0 != '' or abc.1 != '' %}
+        <tr>
+                <td><strong>{{abc.2}}</strong></td>
+            <td>{{ abc.0 }}</td>
+          <td>{{ abc.1 }}</td>
+        </tr>
+              {% endif %}
+          {% endif %}
+          {% if abc.0 != abc.1 %}
+          <tr class = "table-danger">
+              <td><strong>{{abc.2}}</strong></td>
+              <td>{{ abc.0 }}</td>
+          <td>{{ abc.1 }}</td>
+        </tr>
+          {% endif %}
+      {% endfor %}
+    {% endif %}
+      {% if pivot_column == 'Pivot Not Required' %}
+      {% for ab in zipper %}
+          {% if ab.0 == ab.1 %}
+              {% if ab.0 != '' or ab.1 != '' %}
+        <tr>
+            <td>{{ ab.0 }}</td>
+          <td>{{ ab.1 }}</td>
+        </tr>
+              {% endif %}
+          {% endif %}
+          {% if ab.0 != ab.1 %}
+          <tr class = "table-danger">
+              <td>{{ ab.0 }}</td>
+          <td>{{ ab.1 }}</td>
+        </tr>
+          {% endif %}
+      {% endfor %}
+    {% endif %}
+      </tbody>
+    </table>
+
+{% endif %}
+
+</div>
+
+
+{% endblock %}
